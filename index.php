@@ -189,7 +189,7 @@ switch (ENVIRONMENT)
  *  Resolve the system path for increased reliability
  * ---------------------------------------------------------------
  */
-
+	// die('Got This Far');
 	// Set the current directory correctly for CLI requests
 	if (defined('STDIN'))
 	{

@@ -1,0 +1,39 @@
+/* Menu styles */
+
+
+.header-nav {
+	width: 100%;
+}
+
+.nav-horizontal {
+	
+}
+
+.nav-horizontal li {
+	display: table-cell;
+	padding: 0;
+	border-left: 1px solid #5e5e5e;
+}
+
+.nav-horizontal li:first-of-type {
+	border: none;
+}
+
+.nav-horizontal li:hover {
+	background-color: #5e5e5e;
+}
+
+.nav-horizontal li a {
+	display: block;
+	padding: 10px 16px 8px 16px;
+	color: #5e5e5e;
+	font-weight: 600;
+}
+
+.nav-horizontal li a:hover {
+	text-decoration: none;
+	color: #f8f8f8;
+}
+
+
+

@@ -49,6 +49,37 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'welcome';
-$route['404_override'] = '';
-$route['translate_uri_dashes'] = FALSE;
+	
+	
+	$route['recipes'] = 'recipes/view/home';
+	
+	$route['recipes/viewer/(.+)'] = 'recipes/viewer/$1';
+	
+	$route['recipes/manager'] = 'recipes/manager';
+	$route['recipes/manager/(.+)'] = 'recipes/manager/$1';
+	$route['recipes/editor/(.+)'] = 'recipes/editor/$1';
+	$route['recipes/update_recipe/(.+)'] = 'recipes/update_recipe/$1';
+	$route['recipes/delete_recipe/(.+)'] = 'recipes/delete_recipe/$1';
+	
+	$route['recipes/categories_manager'] = 'recipes/categories_manager';
+	$route['recipes/categories_manager/(.+)'] = 'recipes/categories_manager/$1';
+	$route['recipes/category_viewer/(.+)'] = 'recipes/category_viewer/$1';
+	$route['recipes/category_editor/(.+)'] = 'recipes/category_editor/$1';
+	$route['recipes/update_category/(.+)'] = 'recipes/update_category/$1';
+	$route['recipes/delete_category/(.+)'] = 'recipes/delete_category/$1';
+	
+	$route['recipes/toggle_favorite/(.+)'] = 'recipes/toggle_favorite/$1';
+	
+	
+	$route['recipes/finder'] = 'recipes/finder';
+	$route['recipes/finder/(.+)'] = 'recipes/finder/$1';
+	$route['recipes/autocomplete/(.+)'] = 'recipes/autocomplete/$1';
+	
+	$route['recipes/(.+)'] = 'recipes/view/$1';
+	
+	// Default routes
+	$route['default_controller'] = 'recipes/view';
+	$route['(:any)'] = 'recipes/view/$1';
+	
+	$route['404_override'] = '';
+	$route['translate_uri_dashes'] = FALSE;
