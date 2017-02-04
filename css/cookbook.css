@@ -102,8 +102,16 @@ p.footer {
 	text-align: right;
 }
 
+.admin-listing-heading {
+	background-color: #B5D6F5;
+}
+
+.admin-listing-heading th {
+	padding: 4px 5px;
+}
+
 .listing-row td {
-	padding: 3px 0;
+	padding: 3px 5px;
 }
 
 .listing-row.alt {
@@ -334,26 +342,27 @@ p.footer {
 	
 }
 
-
-#admin_recipes_listing th:nth-of-type(1),
-#admin_recipes_listing td:nth-of-type(1) {
-	width: 96px;
-	text-align: left;
-}
-
-#admin_recipes_listing th:nth-of-type(3),
-#admin_recipes_listing td:nth-of-type(3),
-#admin_recipes_listing th:nth-of-type(4),
-#admin_recipes_listing td:nth-of-type(4) {
-	width: 76px;
+#recipes_categories_listing th:nth-of-type(2),
+#recipes_categories_listing td:nth-of-type(2),
+#recipes_categories_listing th:last-of-type,
+#recipes_categories_listing td:last-of-type {
+	width: 120px;
 	text-align: center;
 }
 
-#admin_recipes_listing th:nth-of-type(5),
-#admin_recipes_listing td:nth-of-type(5),
+#admin_recipes_listing th:nth-of-type(2),
+#admin_recipes_listing td:nth-of-type(2),
+#admin_recipes_listing th:nth-of-type(3),
+#admin_recipes_listing td:nth-of-type(3) {
+	width: 82px;
+	text-align: center;
+}
+
+#admin_recipes_listing th:nth-of-type(4),
+#admin_recipes_listing td:nth-of-type(4),
 #admin_recipes_listing th:last-of-type,
 #admin_recipes_listing td:last-of-type {
-	width: 112px;
+	width: 120px;
 	text-align: center;
 }
 

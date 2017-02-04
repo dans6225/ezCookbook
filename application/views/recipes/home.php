@@ -8,8 +8,6 @@
 	
 	$baseURL = base_url();
 	
-	// echo "<pre>" . print_r($this->db->list_fields('recipes'), true) . "</pre>";
-	
 ?>
 	<div id="container">
 		<div id="body">
@@ -20,38 +18,12 @@
 				<div class="block-left col-xs-12 col-sm-6 col-md-4">
 					<div id="favorites_box">
 						<div class="box-heading">Favorites</div>
-						<?php
-							if(cb_not_null($favorites)) {
-								$fList = array();
-								foreach($favorites as $fid => $favorite) {
-									$_row = "<div class=\"favorite-row listing-flex-row\">";
-									if(cb_not_null($favorite->recipes_images)) {
-										$_row .= "	<div class=\"favorite-image listing-flex-row-cell\">";
-										$_row .= anchor("recipes/viewer/{$fid}", img(DIR_WS_IMAGES . "recipes/{$favorite->recipes_images}"), "title=\"{$favorite->recipes_name}\"") . "&nbsp;&nbsp;";
-										$_row .= "	</div>\n";
-									}
-									$_row .= "	<div class=\"favorite-info listing-flex-row-cell\">";
-									$_row .= anchor("recipes/viewer/{$fid}", $favorite->recipes_name, "title=\"{$favorite->recipes_name}\"") . "<br />\n";
-									$_row .= "Category: {$favorite->categories_name}";
-									$_row .= "	</div>\n";
-									
-									$_row .= "</div>\n";
-									
-									$fList[$fid] = $_row;
-								}
-								$_attrs = array(
-									'class' => 'listing-ul',
-									'id' => 'favorites_list'
-								);
-								echo ul($fList, $_attrs);
-							}
-						?>
+						<div class="box-content"><?php echo $favorites; ?></div>
 					</div>
 				</div>
 				<div class="block-right col-xs-12 col-sm-6 col-md-8">
 					<div id="recipe_search">
 						<?php
-							// echo form_open('/recipes/manager', array('id' => 'recipes_finder_form', 'class' => 'micro-search-form', 'method' => 'get'));
 							echo form_open('recipes/finder', array('id' => 'recipes_finder_form', 'class' => 'micro-search-form', 'method' => 'get'));
 							$_params = array(
 								'name' => 'find_keywords',
@@ -69,7 +41,6 @@
 								<div class="field-set-cell button">{$_button}</div>
 							</div>
 FFLD;
-							
 							echo form_close();
 						?>
 					</div>
@@ -97,11 +68,12 @@ FFLD;
 		// Set Admin Status
 		function toggleFavorite(sVal, rid) {
 			$.get(
-				baseURL + "recipes/toggle_favorite/" + sVal + "/" + rid,
+				baseURL + "recipes/toggle_favorite/" + sVal + "/" + rid + "/" + 1,
 				function(data) {
 					// alert(data);
 					if(data.status == true) {
 						$("#status_" + rid).html(data.favorite_html);
+						$("#favorites_box .box-content").html(data.favorites);
 					}
 				},
 				"json"

@@ -24,6 +24,8 @@
 		<link rel="stylesheet" type="text/css" href="/css/cookbook.css">
 		<link rel="stylesheet" type="text/css" href="/css/print.css" media="print">
 		
+		<link rel="stylesheet" type="text/css" href="/javascript/lightbox2/css/lightbox.min.css">
+		
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 		<!--<script src="//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>-->
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>

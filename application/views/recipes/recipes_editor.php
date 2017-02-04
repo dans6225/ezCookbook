@@ -36,7 +36,9 @@
 					echo form_open("/recipes/update_recipe/{$recipes_id}/{$fAction}", $_attrs);
 					echo form_hidden('MAX_FILE_SIZE', '50331648');
 					
-					echo form_hidden('categories_id', $editorInfo->categories_id);
+					if(isset($editorInfo->categories_id)) {
+						echo form_hidden('categories_id', $editorInfo->categories_id);
+					}
 					
 				?>
 				<div class="recipe-row recipe-intro top row">
@@ -207,7 +209,7 @@
 						<li class="recipe-row-cell col-xs-12 col-sm-4 first"></li>
 						<li class="recipe-row-cell  editor-buttons col-xs-12 col-sm-4">
 							<?php
-								$_url = ($action == 'new' ? 'recipes' : "/recipes/viewer/{$recipes_id}");
+								$_url = ($action == 'new' ? '/recipes/manager' : "/recipes/viewer/{$recipes_id}");
 								echo cb_draw_button('Cancel', 'undo', $_url, null) . "&nbsp;&nbsp;";
 								echo cb_draw_button('Submit', 'save', null, null);
 							?>

@@ -93,8 +93,9 @@
 			// die("DBG: <pre>" . print_r($recipes, true) . "</pre>");
 			
 			// Setup table data array
+			// 'Recipes ID',
 			$tData = array(
-				array('Recipes ID', 'Recipes Name', 'Category', 'Favorites', 'Last Modified', 'Actions'),
+				array('Recipes Name', 'Category', 'Favorites', 'Last Modified', 'Actions'),
 			);
 			
 			foreach($recipes['find_results'] as $rInfo) {
@@ -103,10 +104,10 @@
 					'edit' => cb_draw_button('Edit', 'edit', "/recipes/editor/{$rInfo->recipes_id}", 'edit-btn', array('icon_only' => true, 'type' => 'button')),
 					'delete' => cb_draw_button('Delete', 'trash', null, 'delete-btn', array('icon_only' => true, 'type' => 'button', 'params' => 'onclick="deleteRecipe(' . $rInfo->recipes_id . ')"'))
 				);
-				
+				// $rInfo->recipes_id,
+				// $rInfo->recipes_name
 				$tData[] = array(
-					$rInfo->recipes_id,
-					$rInfo->recipes_name,
+					anchor("recipes/viewer/{$rInfo->recipes_id}", $rInfo->recipes_name, "title=\"{$rInfo->recipes_name}\""),
 					$rInfo->categories_name,
 					cb_draw_status_set($rInfo->recipes_id, $rInfo->favorite, 'toggleFavorite'),
 					date('n-j-Y', $rInfo->last_mod),
@@ -138,8 +139,9 @@
 			$this->load->library('table');
 			
 			// Setup table data array
+			// 'Recipes ID',
 			$tData = array(
-				array('Recipes ID', 'Recipes Name', 'Category', 'Favorites', 'Last Modified', 'Actions'),
+				array('Recipes Name', 'Category', 'Favorites', 'Last Modified', 'Actions'),
 			);
 			
 			$this->uInput['page'] = $page;
@@ -155,7 +157,9 @@
 				foreach($recipes['find_results'] as $rInfo) {
 					$_buttons = array('view' => cb_draw_button('Details', 'info', "/recipes/viewer/{$rInfo->recipes_id}", null, array('icon_only' => true, 'type' => 'button')), 'edit' => cb_draw_button('Edit', 'edit', "/recipes/editor/{$rInfo->recipes_id}", 'edit-btn', array('icon_only' => true, 'type' => 'button')), 'delete' => cb_draw_button('Delete', 'trash', null, 'delete-btn', array('icon_only' => true, 'type' => 'button', 'params' => 'onclick="deleteRecipe(' . $rInfo->recipes_id . ')"')));
 					
-					$tData[] = array($rInfo->recipes_id, $rInfo->recipes_name, $rInfo->categories_name, cb_draw_status_set($rInfo->recipes_id, $rInfo->favorite, 'toggleFavorite'), date('n-j-Y', $rInfo->last_mod), implode("&nbsp;", $_buttons));
+					// $rInfo->recipes_id,
+					$_name = anchor("recipes/viewer/{$rInfo->recipes_id}", $rInfo->recipes_name, "title=\"{$rInfo->recipes_name}\"");
+					$tData[] = array($_name, $rInfo->categories_name, cb_draw_status_set($rInfo->recipes_id, $rInfo->favorite, 'toggleFavorite'), date('n-j-Y', $rInfo->last_mod), implode("&nbsp;", $_buttons));
 				}
 			}
 			
@@ -176,12 +180,7 @@
 			
 			if($ajax) {
 				$this->pageData['is_ajax_req'] = true;
-				$vOut = array(
-					'listing' => $this->pageData['listing'],
-					'dbg' => http_build_query($recipes)
-				);
-				
-				echo json_encode($vOut);
+				echo json_encode($this->pageData);
 			} else {
 				// $this->view('recipes_manager');
 				$this->load->view('recipes/recipes_manager', $this->pageData);
@@ -258,6 +257,7 @@
 			$this->pageData['page_title'] = $_cat . ($this->pageData['action'] == 'new' ? "New Recipe" : "{$recipe->recipes_name} Info");
 			
 			$this->pageData['categoriesArray'] = $this->recipes_model->get_categories_array();
+			// $this->pageData['categories_id'] = $rid;
 			
 			$this->pageData['is_ajax_req'] = false;
 			if($ajax && 1 == 2) {
@@ -290,12 +290,14 @@
 			echo json_encode(array('rid' => $rid));
 		}
 		
-		public function toggle_favorite($flag, $rid) {
-			$fOut = array();
-			$fOut['status'] = $this->recipes_model->update_favorite($rid, $flag);
-			$fOut['favorite_html'] = cb_draw_status_set($rid, $flag, 'toggleFavorite');
+		public function toggle_favorite($flag, $rid, $getFavs = false) {
+			$this->pageData['status'] = $this->recipes_model->update_favorite($rid, $flag);
+			$this->pageData['favorite_html'] = cb_draw_status_set($rid, $flag, 'toggleFavorite');
+			if($getFavs) {
+				$this->init_dashboard();
+			}
 			
-			echo json_encode($fOut);
+			echo json_encode($this->pageData);
 			exit;
 		}
 		
@@ -324,8 +326,9 @@
 			// die("DBG: <pre>" . print_r($recipes, true) . "</pre>");
 			
 			// Setup table data array
+			// 'Categories ID',
 			$tData = array(
-				array('Categories ID', 'Categories Name', 'Last Modified', 'Actions'),
+				array('Categories Name', 'Last Modified', 'Actions'),
 			);
 			
 			foreach($category['find_results'] as $rInfo) {
@@ -335,9 +338,9 @@
 					'delete' => cb_draw_button('Delete', 'trash', null, 'delete-btn', array('icon_only' => true, 'type' => 'button', 'params' => 'onclick="deleteCategory(' . $rInfo->categories_id . ')"'))
 				);
 				
+				// $rInfo->categories_id,
 				$tData[] = array(
-					$rInfo->categories_id,
-					$rInfo->categories_name,
+					anchor("/recipes/category_viewer/{$rInfo->categories_id}", $rInfo->categories_name, "title=\"{$rInfo->categories_name}\""),
 					date('n-j-Y', $rInfo->last_mod),
 					implode("&nbsp;", $_buttons)
 				);
@@ -469,7 +472,41 @@
 		
 		// Dashboard functions
 		public function init_dashboard() {
-			$this->pageData['favorites'] = $this->recipes_model->get_favorites();
+			$this->pageData['favorites'] = '';
+			
+			$favorites = $this->recipes_model->get_favorites();
+			if(cb_not_null($favorites)) {
+				$fList = array();
+				foreach($favorites as $fid => $favorite) {
+					$_row = "<div class=\"favorite-row listing-flex-row\">";
+					if(cb_not_null($favorite->recipes_images)) {
+						$_row .= "	<div class=\"favorite-image listing-flex-row-cell\">";
+						$_attrs = array();
+						$params = array(
+							'src' => DIR_WS_IMAGES . "recipes/{$favorite->recipes_images}",
+							'alt' => $favorite->recipes_name,
+							'title' => $favorite->recipes_name,
+							'style' => "max-width: 140px"
+						);
+						$_row .= anchor("recipes/viewer/{$fid}", img($params)) . "&nbsp;&nbsp;";
+						$_row .= "	</div>\n";
+					}
+					$_row .= "	<div class=\"favorite-info listing-flex-row-cell\">";
+					$_row .= anchor("recipes/viewer/{$fid}", $favorite->recipes_name, "title=\"{$favorite->recipes_name}\"") . "<br />\n";
+					$_row .= "Category: {$favorite->categories_name}";
+					$_row .= "	</div>\n";
+					
+					$_row .= "</div>\n";
+					
+					$fList[$fid] = $_row;
+				}
+				$_attrs = array(
+					'class' => 'listing-ul',
+					'id' => 'favorites_list'
+				);
+				$this->pageData['favorites'] = ul($fList, $_attrs);
+			}
+			
 			$this->pageData['keywords'] = (isset($this->uInput['find_keywords']) ? $this->uInput['find_keywords'] : '');
 			$this->pageData[''] = '';
 		}

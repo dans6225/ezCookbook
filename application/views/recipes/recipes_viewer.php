@@ -35,11 +35,12 @@
 						$_attrs = array(
 							'src' => $_filePath,
 							'alt' => $viewerInfo->recipes_name,
-							'class' => 'flipped responsive',
-							'rel' => 'lightbox'
+							'class' => 'flipped responsive'
 						);
+						// anchor($_filePath, img($_attrs), array('data-lightbox' => 'recipe-img', 'data-title' => $viewerInfo->recipes_name))
+						// img($_attrs)
 						if($_has_images) {
-							echo "<div class=\"recipe-viewer-image main hidden-xs col-sm-6\">" . img($_attrs) . "</div>\n";
+							echo "<div class=\"recipe-viewer-image main hidden-xs col-sm-6\">" . anchor($_filePath, img($_attrs), array('data-lightbox' => 'recipe-img', 'data-title' => $viewerInfo->recipes_name)) . "</div>\n";
 						}
 					?>
 					<div class="clearfix"></div>

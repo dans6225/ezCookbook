@@ -211,7 +211,7 @@
 			
 			if($action == 'insert') {
 				$rc_sql = "INSERT IGNORE INTO {$this->dbTables['recipes_categories']} SET recipes_id = '{$rid}', categories_id = '{$data['categories_id']}'";
-				$this->db-query($rc_sql);
+				$this->db->query($rc_sql);
 			} else {
 				if($_recipe->categories_id != $data['categories_id']) {
 					$rc = array(
