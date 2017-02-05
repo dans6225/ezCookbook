@@ -76,7 +76,8 @@
 				// echo $this->upload->display_errors('<p>', '</p>');
 				// die('Failed<pre>' . print_r($_FILES[$fFld], true) . "</pre>");
 			} else {
-				$this->uInput[$fFld] = $_FILES[$fFld]['name'];
+				// $this->uInput[$fFld] = $_FILES[$fFld]['name'];
+				$this->uInput[$fFld] = $this->upload->data('file_name');
 			}
 		}
 		
