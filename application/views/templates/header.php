@@ -5,7 +5,11 @@
 	 * Date: 6/5/2016
 	 * Time: 6:03 PM
 	 */
-
+	
+	$baseURL = base_url();
+	
+	$baseURI = parse_url($_SERVER['REQUEST_URI']);
+	
 ?>
 	<!DOCTYPE html>
 	<html lang="en">
@@ -43,6 +47,14 @@
 			if(isset($headData) && cb_not_null($headData)) {
 				echo $headData;
 			}
+			
+			$activeNav = 'default';
+			if(preg_match("/(category|categories)/", $baseURI['path']) > 0) {
+				$activeNav = 'categories';
+			} elseif(strpos($baseURI['path'], 'recipes/') !== false) {
+				$activeNav = 'recipes';
+			}
+			
 		?>
 	</head>
 	<?php
@@ -58,9 +70,9 @@
 			<div class="header-top"></div>
 			<div class="header-nav">
 				<ul id="header_nav" class="nav-ul nav-horizontal">
-					<li class="nav-to-dahsboard first"><a href="/">Dashboard</a></li>
-					<li class="nav-to-categories-manager"><a href="/recipes/categories_manager/">Categories</a></li>
-					<li class="nav-to-recipes-manager"><a href="/recipes/manager/">Recipes</a></li>
+					<li class="nav-to-dahsboard first<?php echo ($activeNav == 'default' ? " active" : ''); ?>"><a href="/">Dashboard</a></li>
+					<li class="nav-to-categories-manager<?php echo ($activeNav == 'categories' ? " active" : ''); ?>"><a href="/recipes/categories_manager/">Categories</a></li>
+					<li class="nav-to-recipes-manager<?php echo ($activeNav == 'recipes' ? " active" : ''); ?>"><a href="/recipes/manager/">Recipes</a></li>
 					<!--<li class="nav-to-bus-users"><a href="/recipes/admins_manager/">Admin Users</a></li>-->
 				</ul>
 			</div>
