@@ -177,6 +177,11 @@
 				$_likePos = (isset($sData['find_method']) && cb_not_null($sData['find_method']) ? $sData['find_method'] : 'both');
 				$this->db->like("{$this->dbTables['recipes']}.recipes_name", trim($sData['find_keywords'], $_likePos));
 				$this->db->or_like("{$this->dbTables['categories']}.categories_name", trim($sData['find_keywords'], $_likePos));
+				/*$this->db->or_where("MATCH({$this->dbTables['categories']}.categories_name, {$this->dbTables['categories']}.categories_description, {$this->dbTables['categories']}.categories_keywords)
+									 AGAINST('{$sData['find_keywords']}')");*/
+				$this->db->or_where("MATCH({$this->dbTables['recipes']}.recipes_name, {$this->dbTables['recipes']}.ingredients_left, {$this->dbTables['recipes']}.ingredients_right, 
+										   {$this->dbTables['recipes']}.directions, {$this->dbTables['recipes']}.notes) 
+									 AGAINST('{$sData['find_keywords']}')");
 			}
 			$this->db->order_by("{$this->dbTables['recipes']}.recipes_name", 'ASC');
 			
