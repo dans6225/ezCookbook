@@ -73,6 +73,20 @@
 				}
 			}*/
 			
+			$this->dbTables['cooking_info'] = 'cooking_info';
+			$this->dbTableCols['cooking_info']['all'] = $this->db->list_fields($this->dbTables['cooking_info']);
+			$this->dbTableCols['cooking_info']['forms_exclude'] = array(
+				'cooking_info_id',
+				'last_mod'
+			);
+			$this->dbTableCols['cooking_info']['edit_form'] = array();
+			foreach($this->dbTableCols['cooking_info']['all'] as $col) {
+				if(!in_array($col, $this->dbTableCols['cooking_info']['forms_exclude'])) {
+					$this->dbTableCols['cooking_info']['edit_form'][] = $col;
+				}
+			}
+			
+			
 		}
 		
 		public function getProp($name) {
@@ -354,5 +368,110 @@
 			$this->db->where('categories_id', $cid);
 			return $this->db->delete($tables);
 		}
+		
+		
+		// Cooking Tips, Tricks and Notes
+		public function find_cooking_info($sData = array(), $ajax = false) {
+			$fOut = array(
+				'status' => 'fail',
+				'foundCt' => 0,
+				'find_results' => array(),
+				'msg' => ''
+			);
+			
+			$_select = "cooking_info_id,
+						cooking_info_name,
+						last_mod";
+			
+			$this->db->select($_select);
+			$this->db->from($this->dbTables['cooking_info']);
+			
+			if(isset($sData['find_keywords']) && cb_not_null($sData['find_keywords'])) {
+				$_likePos = (isset($sData['find_method']) && cb_not_null($sData['find_method']) ? $sData['find_method'] : 'both');
+				$_keywords = trim($sData['find_keywords'], $_likePos);
+				$this->db->or_like(array("cooking_info_name" => $_keywords, "cooking_info_keywords" => $_keywords));
+			}
+			$this->db->order_by("cooking_info_name", 'ASC');
+			
+			if(isset($sData['page']) && (int)$sData['page'] > 1) {
+				$_start = ($sData['page'] * $this->maxListingDisplay) + 1;
+				$_end = $_start + $this->maxListingDisplay;
+				$this->db->limit($_start, $_end);
+			}
+			// die($this->db->get_compiled_select());
+			$qry = $this->db->get();
+			
+			if($qry) {
+				$fOut['status'] = 'success';
+				$fOut['foundCt'] = $qry->num_rows();
+				$fOut['find_results'] = $qry->result();
+			} else {
+				$fOut['msg'] = 'None Found';
+			}
+			return $fOut;
+			
+		}
+		
+		public function get_cooking_info($cid, $edit = false) {
+			$category = new stdClass();
+			
+			if(!is_int($cid)) {
+				$cid = (int)$cid;
+			}
+			if($cid < 1) {
+				$new = array();
+				foreach($this->dbTableCols['cooking_info']['all'] as $fld) {
+					$category->$fld = '';
+					if($fld == 'last_mod') {
+						$category->$fld = time();
+					} elseif($fld == 'cooking_info_id') {
+						$category->$fld = 0;
+					}
+				}
+				return $category;
+			}
+			
+			$_select = implode(',', $this->dbTableCols['cooking_info']['edit_form']);
+			if(!$edit) {
+				$_select .= ", last_mod";
+			}
+			
+			$this->db->select($_select);
+			$this->db->from($this->dbTables['cooking_info']);
+			$this->db->where("cooking_info_id", $cid);
+			$qry = $this->db->get();
+			
+			if($qry) {
+				$category = $qry->row();
+			}
+			
+			return $category;
+		}
+		
+		public function update_cooking_info($data, $cid = 0, $action = 'insert') {
+			$_data = array('last_mod' => time());
+			
+			foreach($this->dbTableCols['cooking_info']['edit_form'] as $fld) {
+				if(isset($data[$fld])) {
+					$_data[$fld] = $data[$fld];
+				}
+			}
+			
+			if($action == 'insert') {
+				$this->db->insert($this->dbTables['cooking_info'], $_data);
+				$cid = $this->db->insert_id();
+			} else {
+				$this->db->update($this->dbTables['cooking_info'], $_data, array('cooking_info_id' => $cid));
+			}
+			
+			return $cid;
+		}
+		
+		public function delete_cooking_info($cid) {
+			$tables = array($this->dbTables['cooking_info']);
+			$this->db->where('cooking_info_id', $cid);
+			return $this->db->delete($tables);
+		}
+		
 		
 	}

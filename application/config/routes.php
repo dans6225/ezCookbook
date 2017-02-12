@@ -77,6 +77,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	$route['recipes/(.+)'] = 'recipes/view/$1';
 	
+	$route['cooking_info/manager'] = 'cooking_info/manager';
+	$route['cooking_info/manager/(.+)'] = 'cooking_info/manager/$1';
+	$route['cooking_info/viewer/(.+)'] = 'cooking_info/viewer/$1';
+	$route['cooking_info/editor/(.+)'] = 'cooking_info/editor/$1';
+	$route['cooking_info/update/(.+)'] = 'cooking_info/update/$1';
+	$route['cooking_info/delete/(.+)'] = 'cooking_info/delete/$1';
+	$route['cooking_info'] = 'cooking_info/manager';
+	
 	// Default routes
 	$route['default_controller'] = 'recipes/view';
 	$route['(:any)'] = 'recipes/view/$1';

@@ -51,8 +51,10 @@
 			$activeNav = 'default';
 			if(preg_match("/(category|categories)/", $baseURI['path']) > 0) {
 				$activeNav = 'categories';
-			} elseif(strpos($baseURI['path'], 'recipes/') !== false) {
+			} elseif(strpos($baseURI['path'], '/recipes') !== false) {
 				$activeNav = 'recipes';
+			} elseif(strpos($baseURI['path'], '/cooking_info') !== false) {
+				$activeNav = 'cooking_info';
 			}
 			
 		?>
@@ -73,6 +75,7 @@
 					<li class="nav-to-dahsboard first<?php echo ($activeNav == 'default' ? " active" : ''); ?>"><a href="/">Dashboard</a></li>
 					<li class="nav-to-categories-manager<?php echo ($activeNav == 'categories' ? " active" : ''); ?>"><a href="/recipes/categories_manager/">Categories</a></li>
 					<li class="nav-to-recipes-manager<?php echo ($activeNav == 'recipes' ? " active" : ''); ?>"><a href="/recipes/manager/">Recipes</a></li>
+					<li class="nav-to-cooking-info-manager<?php echo ($activeNav == 'cooking_info' ? " active" : ''); ?>"><a href="/cooking_info/manager/">Cooking Info</a></li>
 					<!--<li class="nav-to-bus-users"><a href="/recipes/admins_manager/">Admin Users</a></li>-->
 				</ul>
 			</div>
