@@ -13,6 +13,7 @@
 		
 		
 		public $rID = 0;
+		public $showScore = false;
 		
 		protected $pageData = array();
 		protected $uInput = array();
@@ -107,8 +108,9 @@
 				);
 				// $rInfo->recipes_id,
 				// $rInfo->recipes_name
+				$_score = ($this->showScore ? "<br />(" . number_format($rInfo->score, 3) . ")" : '');
 				$tData[] = array(
-					anchor("recipes/viewer/{$rInfo->recipes_id}", $rInfo->recipes_name, "title=\"{$rInfo->recipes_name}\""),
+					anchor("recipes/viewer/{$rInfo->recipes_id}", $rInfo->recipes_name, "title=\"{$rInfo->recipes_name}\"") . $_score,
 					$rInfo->categories_name,
 					cb_draw_status_set($rInfo->recipes_id, $rInfo->favorite, 'toggleFavorite'),
 					date('n-j-Y', $rInfo->last_mod),
@@ -124,7 +126,7 @@
 			);
 			$this->table->set_template($_tpl);
 			
-			$this->pageData['keywords'] = (isset($this->uInput['keywords']) ? $this->uInput['keywords'] : '');
+			$this->pageData['keywords'] = (isset($this->uInput['find_keywords']) ? $this->uInput['find_keywords'] : '');
 			$this->pageData['page'] = (isset($this->uInput['page']) && (int)$this->uInput['page'] ? (int)$this->uInput['page'] : 1);
 			$this->pageData['listing'] = $this->table->generate($tData);
 			$this->pageData['elapsed_time'] = number_format((microtime(true) - $_start_time), 4);
@@ -160,6 +162,9 @@
 					
 					// $rInfo->recipes_id,
 					$_name = anchor("recipes/viewer/{$rInfo->recipes_id}", $rInfo->recipes_name, "title=\"{$rInfo->recipes_name}\"");
+					if($this->showScore) {
+						$_name .= "<br />(" . number_format($rInfo->score, 3) . ")";
+					}
 					$tData[] = array($_name, $rInfo->categories_name, cb_draw_status_set($rInfo->recipes_id, $rInfo->favorite, 'toggleFavorite'), date('n-j-Y', $rInfo->last_mod), implode("&nbsp;", $_buttons));
 				}
 			}
@@ -173,7 +178,7 @@
 			
 			$this->table->set_template($_tpl);
 			
-			$this->pageData['keywords'] = (isset($this->uInput['keywords']) ? $this->uInput['keywords'] : '');
+			$this->pageData['keywords'] = (isset($this->uInput['find_keywords']) ? $this->uInput['find_keywords'] : '');
 			$this->pageData['page'] = (isset($this->uInput['page']) && (int)$this->uInput['page'] ? (int)$this->uInput['page'] : 1);
 			$this->pageData['listing'] = $this->table->generate($tData);
 			$this->pageData['elapsed_time'] = number_format((microtime(true) - $_start_time), 4);
