@@ -211,6 +211,7 @@
 							<?php
 								$_url = ($action == 'new' ? '/recipes/manager' : "/recipes/viewer/{$recipes_id}");
 								echo cb_draw_button('Cancel', 'undo', $_url, null) . "&nbsp;&nbsp;";
+								echo cb_draw_button('Apply', 'save', null, null, array('params' => 'name="apply_updates" value="apply"')) . "&nbsp;&nbsp;";
 								echo cb_draw_button('Submit', 'save', null, null);
 							?>
 						</li>

@@ -290,6 +290,8 @@
 			
 			if(isset($this->uInput['returnTo']) && cb_not_null($this->uInput['returnTo'])) {
 				redirect($this->uInput['returnTo']);
+			} elseif(isset($this->uInput['apply_updates']) && $this->uInput['apply_updates'] == 'apply') {
+				redirect("/recipes/editor/{$rid}");
 			} elseif(!$ajax) {
 				redirect("/recipes/viewer/{$rid}");
 			}
