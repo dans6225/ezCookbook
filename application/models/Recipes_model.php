@@ -159,11 +159,7 @@
 				'find_results' => array(),
 				'msg' => ''
 			);
-			
-			$_keywords = '';
-			if(isset($sData['find_keywords']) && cb_not_null($sData['find_keywords'])) {
-				$_keywords = $sData['find_keywords'];
-			}
+			$cat_id = false;
 			
 			$_select = "{$this->dbTables['recipes']}.recipes_id, 
 						{$this->dbTables['recipes']}.recipes_name, 
@@ -171,22 +167,33 @@
 						{$this->dbTables['recipes']}.recipes_images, 
 						{$this->dbTables['recipes']}.last_mod,
 						{$this->dbTables['categories']}.categories_id,
-						{$this->dbTables['categories']}.categories_name,
-						((MATCH({$this->dbTables['recipes']}.recipes_name, {$this->dbTables['recipes']}.ingredients_left, {$this->dbTables['recipes']}.ingredients_right, 
-							    {$this->dbTables['recipes']}.directions, {$this->dbTables['recipes']}.notes) 
-						  AGAINST('{$_keywords}') * 10) 
-						  	+ IF({$this->dbTables['recipes']}.recipes_name LIKE '%{$_keywords}%', 2, 0) 
-							+ IF({$this->dbTables['categories']}.categories_name LIKE '%{$_keywords}%', 1, 0) 
-							+ IF({$this->dbTables['categories']}.categories_keywords LIKE '%{$_keywords}%', (0.5), 0) 
+						{$this->dbTables['categories']}.categories_name";
+			
+			if(isset($sData['cat_id']) && cb_not_null($sData['cat_id'])) {
+				$cat_id = $sData['cat_id'];
+				$_select .= ", '1' AS score";
+			} else {
+				$_keywords = '';
+				if(isset($sData['find_keywords']) && cb_not_null($sData['find_keywords'])) {
+					$_keywords = $sData['find_keywords'];
+				}
+				$_select .= ", ((MATCH({$this->dbTables['recipes']}.recipes_name, {$this->dbTables['recipes']}.ingredients_left, {$this->dbTables['recipes']}.ingredients_right,
+							    {$this->dbTables['recipes']}.directions, {$this->dbTables['recipes']}.notes)
+						  AGAINST('{$_keywords}'))
+						  	+ IF({$this->dbTables['recipes']}.recipes_name LIKE '%{$_keywords}%', 2, 0)
+							+ IF({$this->dbTables['categories']}.categories_name LIKE '%{$_keywords}%', 1, 0)
+							+ IF({$this->dbTables['categories']}.categories_keywords LIKE '%{$_keywords}%', (0.5), 0)
 						  ) AS score";
+			}
 			
 			$this->db->select($_select);
 			$this->db->from($this->dbTables['recipes']);
 			$this->db->join($this->dbTables['recipes_categories'], "{$this->dbTables['recipes']}.recipes_id = {$this->dbTables['recipes_categories']}.recipes_id", 'inner');
 			$this->db->join($this->dbTables['categories'], "{$this->dbTables['recipes_categories']}.categories_id = {$this->dbTables['categories']}.categories_id", 'inner');
 			
-			
-			if(cb_not_null($_keywords)) {
+			if($cat_id && (int)$cat_id > 0) {
+				$this->db->where("{$this->dbTables['categories']}.categories_id", $cat_id);
+			} elseif(cb_not_null($_keywords)) {
 				$_likePos = (isset($sData['find_method']) && cb_not_null($sData['find_method']) ? $sData['find_method'] : 'both');
 				$this->db->group_start();
 				$this->db->where("MATCH({$this->dbTables['recipes']}.recipes_name, {$this->dbTables['recipes']}.ingredients_left, {$this->dbTables['recipes']}.ingredients_right, 
@@ -199,8 +206,9 @@
 				// $this->db->or_like("{$this->dbTables['recipes']}.recipes_name", trim($_keywords, $_likePos)); // Pretty sure not needed
 				
 				$this->db->group_end();
+				$this->db->having("score >= 1");
 			}
-			$this->db->having("score >= 1");
+			
 			// $this->db->order_by("score", 'DESC');
 			$this->db->order_by("{$this->dbTables['recipes']}.recipes_name", 'ASC');
 			
@@ -373,6 +381,9 @@
 			
 			foreach($this->dbTableCols['categories']['edit_form'] as $fld) {
 				if(isset($data[$fld])) {
+					if(strpos($fld, 'name') !== false) {
+						$data[$fld] = trim($data[$fld]);
+					}
 					$_data[$fld] = $data[$fld];
 				}
 			}

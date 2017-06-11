@@ -86,3 +86,6 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 	
 	defined('DOC_ROOT')      OR define('DOC_ROOT', preg_replace("/\/$/i", '', $_SERVER['DOCUMENT_ROOT']) . '/');
 	defined('DIR_WS_IMAGES')      OR define('DIR_WS_IMAGES', 'images/');
+	define('IMAGES_MAX_WIDTH', 800);
+	define('IMAGES_MAX_HEIGHT', 600);
+	define('IMAGES_MAX_FILESIZE', 512);

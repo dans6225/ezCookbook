@@ -27,5 +27,5 @@ images
 *.sublime-workspace
 *.sublime-project
 
-// DD added
+# DD added
 __*

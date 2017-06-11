@@ -64,7 +64,8 @@
 									'id' => 'recipes_name',
 									'value' => $_val,
 									'placeholder' => 'Recipe Name',
-									'class' => $baseFldClass
+									'class' => $baseFldClass,
+                                    'onchange' => 'trimInput(this)'
 								);
 								$_attrs = array_merge($_attrs, $baseFldParams);
 								$_label = form_label('Recipe Name:', 'recipes_name', array('class' => $baseLblClass));
@@ -80,7 +81,7 @@
 									'id' => 'notes',
 									'value' => $_val,
 									'placeholder' => 'Recipe Notes',
-									'rows' => 3,
+									'rows' => 7,
 									'class' => $baseFldClass
 								);
 								$_attrs = array_merge($_attrs, $baseFldParams);
@@ -153,7 +154,7 @@
 								'id' => 'ingredients_left',
 								'value' => $_val,
 								'placeholder' => "Ingredients (One per line):",
-								'rows' => 6,
+								'rows' => 8,
 								'class' => $baseFldClass
 							);
 							$_attrs = array_merge($_attrs, $baseFldParams);
@@ -171,7 +172,7 @@
 								'id' => 'ingredients_right',
 								'value' => $_val,
 								'placeholder' => "Ingredients Column 2 (One per line):",
-								'rows' => 6,
+								'rows' => 8,
 								'class' => $baseFldClass
 							);
 							$_attrs = array_merge($_attrs, $baseFldParams);
@@ -193,7 +194,7 @@
 								'id' => 'directions',
 								'value' => $_val,
 								'placeholder' => 'Directions',
-								'rows' => 6,
+								'rows' => 10,
 								'class' => $baseFldClass
 							);
 							$_attrs = array_merge($_attrs, $baseFldParams);
@@ -224,6 +225,19 @@
 			</div>
 		</div>
 	</div>
+    <script type="text/javascript">
+        function trimInput(tObj) {
+            var tVal = $(tObj).val().trim();
+            $(tObj).val(tVal);
+        }
+        
+        $(function() {
+            CKEDITOR.replace("directions", {
+                height: '350px',
+                width: '100%'
+            });
+        })
+    </script>
 	
 	<?php
 	

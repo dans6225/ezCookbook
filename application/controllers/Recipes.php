@@ -66,19 +66,42 @@
 		public function upload_images($fFld = 'recipes_images') {
 			$config['upload_path']          = DOC_ROOT . '/images/recipes/';
 			$config['allowed_types']        = 'gif|jpg|png';
-			$config['max_size']             = 100;
-			$config['max_width']            = 1024;
-			$config['max_height']           = 768;
+			$config['overwrite']            = TRUE;
+			// $config['max_size']             = IMAGES_MAX_FILESIZE;
+			// $config['max_width']            = IMAGES_MAX_WIDTH;
+			// $config['max_height']           = IMAGES_MAX_HEIGHT;
 			
 			$this->load->library('upload', $config);
 			
 			if (!$this->upload->do_upload($fFld)) {
 				$this->uInput[$fFld] = '';
-				// echo $this->upload->display_errors('<p>', '</p>');
+				$this->pageData['errors']['image_upload'] = $this->upload->display_errors('<p>', '</p>');
+				 // echo $this->upload->display_errors('<p>', '</p>');
 				// die('Failed<pre>' . print_r($_FILES[$fFld], true) . "</pre>");
 			} else {
+				$data = $this->upload->data();
+				$this->uInput[$fFld] = $data['file_name'];
+				
+				if($data['image_width'] > IMAGES_MAX_WIDTH || $data['image_height'] > IMAGES_MAX_HEIGHT) {
+					$rconfig = array(
+						'image_library' => 'ImageMagick',
+						'library_path' => '/usr/bin/convert',
+						'source_image' => $config['upload_path'] . $data['file_name']
+					);
+					if($data['image_width'] > IMAGES_MAX_WIDTH) {
+						$rconfig['width'] = IMAGES_MAX_WIDTH;
+					}
+					if($data['image_height'] > IMAGES_MAX_HEIGHT) {
+						$rconfig['height'] = IMAGES_MAX_HEIGHT;
+					}
+					$this->load->library('image_lib', $rconfig);
+					if (!$this->image_lib->resize()) {
+						$this->pageData['errors']['image_resize'] = $this->image_lib->display_errors('<p>', '</p>');
+					}
+				}
 				// $this->uInput[$fFld] = $_FILES[$fFld]['name'];
-				$this->uInput[$fFld] = $this->upload->data('file_name');
+				
+				
 			}
 		}
 		
@@ -219,6 +242,9 @@
 			
 			$recipe = $this->recipes_model->get_recipe($rid);
 			
+			if(cb_not_null($recipe->notes)) {
+				$recipe->notes = str_replace("\n", "<br />", $recipe->notes);
+			}
 			if(cb_not_null($recipe->ingredients_left)) {
 				$recipe->ingredients_left = str_replace("\n", "<br />", $recipe->ingredients_left);
 			}
@@ -226,11 +252,11 @@
 				$recipe->ingredients_right = str_replace("\n", "<br />", $recipe->ingredients_right);
 			}
 			if(cb_not_null($recipe->directions)) {
-				$recipe->directions = str_replace("\n", "<br />", $recipe->directions);
+				// $recipe->directions = str_replace("\n", "<br />", $recipe->directions);
 			}
 			
 			$this->pageData['viewerInfo'] = $recipe;
-			$this->pageData['page_title'] = "{$recipe->categories_name} | {$recipe->recipes_name} Info";
+			$this->pageData['page_title'] = "{$recipe->categories_name} | {$recipe->recipes_name}";
 			
 			$this->pageData['is_ajax_req'] = false;
 			if($ajax) {
@@ -336,11 +362,12 @@
 			// Setup table data array
 			// 'Categories ID',
 			$tData = array(
-				array('Categories Name', 'Last Modified', 'Actions'),
+				array('Categories Name', "&nbsp;", 'Last Modified', 'Actions'),
 			);
 			
 			foreach($category['find_results'] as $rInfo) {
 				$_buttons = array(
+					'recipes' => cb_draw_button('Recipes', 'th-list', "/recipes/manager?cat_id={$rInfo->categories_id}", 'recipes-btn', array('icon_only' => true, 'type' => 'button')),
 					'view' => cb_draw_button('Details', 'info', "/recipes/category_viewer/{$rInfo->categories_id}", null, array('icon_only' => true, 'type' => 'button')),
 					'edit' => cb_draw_button('Edit', 'edit', "/recipes/category_editor/{$rInfo->categories_id}", 'edit-btn', array('icon_only' => true, 'type' => 'button')),
 					'delete' => cb_draw_button('Delete', 'trash', null, 'delete-btn', array('icon_only' => true, 'type' => 'button', 'params' => 'onclick="deleteCategory(' . $rInfo->categories_id . ')"'))
@@ -349,6 +376,7 @@
 				// $rInfo->categories_id,
 				$tData[] = array(
 					anchor("/recipes/category_viewer/{$rInfo->categories_id}", $rInfo->categories_name, "title=\"{$rInfo->categories_name}\""),
+					anchor("/recipes/manager?cat_id={$rInfo->categories_id}", "Recipes", "{$rInfo->categories_name} Recipes"),
 					date('n-j-Y', $rInfo->last_mod),
 					implode("&nbsp;", $_buttons)
 				);

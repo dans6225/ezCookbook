@@ -55,6 +55,7 @@
 						<li class="recipe-row-cell viewer-buttons col-xs-12 col-sm-4 noprint">
 							<?php
 								echo cb_draw_button('Back', 'undo', '/recipes/categories_manager/') . "&nbsp;&nbsp;";
+								echo cb_draw_button('Recipes', 'th-list', "/recipes/manager?cat_id={$categories_id}", 'recipes-btn', array()) . "&nbsp;&nbsp;";
 								echo cb_draw_button('Edit', 'edit', '/recipes/category_editor/' . $categories_id) . "&nbsp;&nbsp;";
 								echo cb_draw_button('Delete', 'trash', 'javascript:void(0);', 'delete-btn', array('params' => 'onclick="deleteCategory(' . $categories_id . ')"'))
 							?>

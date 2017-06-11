@@ -35,7 +35,7 @@
 						$_attrs = array(
 							'src' => $_filePath,
 							'alt' => $viewerInfo->recipes_name,
-							'class' => 'flipped responsive'
+							// 'class' => 'flipped responsive'
 						);
 						// anchor($_filePath, img($_attrs), array('data-lightbox' => 'recipe-img', 'data-title' => $viewerInfo->recipes_name))
 						// img($_attrs)

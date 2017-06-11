@@ -33,7 +33,9 @@
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 		<!--<script src="//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>-->
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
-		
+
+        <script src="/javascript/ckeditor/ckeditor.js"></script>
+        
 		<!--<script src="/javascript/general_javascript.js"></script>-->
 		
 		<script type="text/javascript">

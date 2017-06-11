@@ -40,6 +40,15 @@ code {
 	margin: 0 15px 0 15px;
 }
 
+h3 {
+	font-size: 14px;
+	font-weight: bold;
+}
+
+h4 {
+	font-size: 14px;
+}
+
 /* Header Region styles */
 #header_region {
 	margin: 5px auto;
@@ -135,6 +144,10 @@ p.footer {
 	height: 28px;
 	padding: initial;
 	font-size: 19px;
+}
+
+.btn.recipes-btn {
+	background-color: palegreen;
 }
 
 .btn.edit-btn {
@@ -352,14 +365,24 @@ p.footer {
 
 #recipes_categories_listing th:nth-of-type(2),
 #recipes_categories_listing td:nth-of-type(2),
-#recipes_categories_listing th:last-of-type,
-#recipes_categories_listing td:last-of-type {
+#recipes_categories_listing th:nth-of-type(3),
+#recipes_categories_listing td:nth-of-type(3) {
 	width: 120px;
 	text-align: center;
 }
 
+#recipes_categories_listing th:last-of-type,
+#recipes_categories_listing td:last-of-type {
+	width: 140px;
+	text-align: center;
+}
+
 #admin_recipes_listing th:nth-of-type(2),
-#admin_recipes_listing td:nth-of-type(2),
+#admin_recipes_listing td:nth-of-type(2) {
+	width: 160px;
+	text-align: center;
+}
+
 #admin_recipes_listing th:nth-of-type(3),
 #admin_recipes_listing td:nth-of-type(3) {
 	width: 82px;
