@@ -93,7 +93,7 @@ p.footer {
 	margin: 20px 0 0 0;
 }
 
-.clearfix {
+.clearFloats {
 	clear: both;
 }
 
@@ -412,6 +412,20 @@ p.footer {
 
 .form-field-box {
 	margin-bottom: 7px;
+}
+
+.listing-pagination {
+	padding-top: 12px;
+	text-align: right;
+}
+
+.pagination-link {
+	padding: 0 4px;
+}
+
+.listing-count {
+	padding: 0 0 12px 0;
+	text-align: right;
 }
 
 

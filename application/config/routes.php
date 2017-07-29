@@ -56,6 +56,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$route['recipes/viewer/(.+)'] = 'recipes/viewer/$1';
 	
 	$route['recipes/manager'] = 'recipes/manager';
+    $route['recipes/manager/page/([0-9]+)'] = 'recipes/manager/$1';
 	$route['recipes/manager/(.+)'] = 'recipes/manager/$1';
 	$route['recipes/editor/(.+)'] = 'recipes/editor/$1';
 	$route['recipes/update_recipe/(.+)'] = 'recipes/update_recipe/$1';
