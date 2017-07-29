@@ -86,7 +86,6 @@
 				}
 			}
 			
-			
 		}
 		
 		public function getProp($name) {
@@ -212,10 +211,16 @@
 			// $this->db->order_by("score", 'DESC');
 			$this->db->order_by("{$this->dbTables['recipes']}.recipes_name", 'ASC');
 			
-			if(isset($sData['page']) && (int)$sData['page'] > 1) {
-				$_start = ($sData['page'] * $this->maxListingDisplay) + 1;
-				$_end = $_start + $this->maxListingDisplay;
-				$this->db->limit($_start, $_end);
+			$ctSql = $this->db->get_compiled_select(null, FALSE);
+			$ctQry = $this->db->query($ctSql);
+			$foundTotal = $ctQry->num_rows();
+			
+			if($foundTotal > $this->maxListingDisplay || (isset($sData['page']) && (int)$sData['page'] > 1)) {
+				$_start = 0;
+				if((int)$sData['page'] > 1) {
+					$_start = (($sData['page'] -1) * $this->maxListingDisplay);
+				}
+				$this->db->limit($this->maxListingDisplay, $_start);
 			}
 			// die($this->db->get_compiled_select());
 			$qry = $this->db->get();
@@ -224,6 +229,7 @@
 				$fOut['status'] = 'success';
 				$fOut['foundCt'] = $qry->num_rows();
 				$fOut['find_results'] = $qry->result();
+				$fOut['foundTotal'] = $foundTotal;
 			} else {
 				$fOut['msg'] = 'None Found';
 			}

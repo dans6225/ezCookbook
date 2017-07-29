@@ -9,7 +9,20 @@
 	$baseURL = base_url();
 	
 	// echo "<pre>" . print_r($this->db->list_fields('recipes'), true) . "</pre>";
-	
+
+	// echo "{$total_found} -- {$results2display}";
+
+    $results2display_array = array(
+        10 => 10,
+        20 => 20,
+        25 => 25,
+        30 => 30,
+        40 => 40,
+        50 => 50
+    );
+    
+    $results2display_js = "onChange=\"updateResults2Display(this)\"";
+
 ?>
 	<div id="container">
 		<div id="body">
@@ -50,8 +63,9 @@ FFLD;
 			<div class="body-main row">
 				<div id="recipes_listing" class="recipes-listing">
 					<?php
+					    echo "<div class=\"listing-count clearFloats\">Display " . form_dropdown('results2display', $results2display_array, $results2display, $results2display_js) . " Results</div>\n";
 						echo $listing;
-						// echo "<div class=\"listing-pagination\">" . $pagination . "</div>\n";
+						echo "<div class=\"listing-pagination clearFloats\">" . $pagination . "</div>\n";
 					?>
 				</div>
 			</div>
@@ -86,6 +100,10 @@ FFLD;
 				"json"
 			);
 		}
+		
+		function updateResults2Display(r2dObj) {
+		    window.location.assign('/recipes/manager/?results2display=' + $(r2dObj).val());
+        }
 		
 	</script>
 <?php

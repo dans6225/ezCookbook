@@ -14,6 +14,7 @@
 		
 		public $rID = 0;
 		public $showScore = false;
+		public $displayResultsCount;
 		
 		protected $pageData = array();
 		protected $uInput = array();
@@ -22,6 +23,8 @@
 
 			parent::__construct();
 			
+			$this->displayResultsCount = DEFUALT_MAX_DISPLAY_LISTING_RESULTS;
+			
 			if(isset($_GET) && is_array($_GET) && cb_not_null($_GET)) {
 				$this->uInput = $this->input->get(NULL, TRUE);
 			}
@@ -29,9 +32,18 @@
 				$this->uInput = array_merge($this->uInput, $this->input->post(NULL, TRUE));
 			}
 			
+			// Load up session functionality
+			$this->load->library('session');
+			
+			// Set listing display count
+			if(!isset($this->session->results2display) || (isset($this->uInput['results2display']) && $this->uInput['results2display'] >= 10)) {
+				$this->session->results2display = (isset($this->uInput['results2display']) && $this->uInput['results2display'] >= 10 ? $this->uInput['results2display'] : $this->displayResultsCount);
+			}
+			
 			// Load recipes model
 			$this->load->model('recipes_model');
-
+			$this->recipes_model->maxListingDisplay = $this->session->results2display;
+			
 		}
 
 
@@ -154,6 +166,26 @@
 			$this->pageData['listing'] = $this->table->generate($tData);
 			$this->pageData['elapsed_time'] = number_format((microtime(true) - $_start_time), 4);
 			$this->pageData['foundCt'] = $recipes['foundCt'];
+			$this->pageData['total_found'] = $recipes['foundTotal'];
+			$this->pageData['results2display'] = $this->session->results2display;
+			
+			// Setup CodeIgniter pagination
+			$this->load->library('pagination');
+			$config['base_url'] = base_url() . 'recipes/manager/page/';
+			$config['num_links'] = 3;
+			$config['first_link'] = "&lt;&lt;";
+			$config['last_link'] = "&gt;&gt;";
+			$config['reuse_query_string'] = FALSE;
+			$config['use_page_numbers'] = TRUE;
+			$config['total_rows'] = $this->pageData['total_found'];
+			$config['per_page'] = $this->session->results2display;
+			$config['cur_tag_open'] = '<strong class="pagination-link">';
+			$config['attributes'] = array('class' => 'pagination-link');
+			$this->pagination->initialize($config);
+			
+			$fStart = ((($this->pageData['page'] - 1) * $this->session->results2display) + 1);
+			$fEnd = ($fStart + (min($this->session->results2display, $this->pageData['foundCt']) - 1));
+			$this->pageData['pagination'] = "{$fStart} to {$fEnd} of {$this->pageData['total_found']} " . $this->pagination->create_links();
 			
 			$this->view('recipes_manager');
 			
