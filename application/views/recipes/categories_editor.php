@@ -14,8 +14,8 @@
 		$baseFldParams['disabled'] = "true";
 		$baseFldParams['readonly'] = "true";
 	}
-	
-	
+
+    $pager = ($page > 1 ? "/{$page}" : "");
 	
 	// die("<pre>" . print_r($editorInfo, true) . "</pre>");
 	
@@ -33,7 +33,7 @@
 						'enctype' => 'multipart/form-data'
 					);
 					$fAction = ($action == 'new' ? 'insert' : 'update');
-					echo form_open("/recipes/update_category/{$categories_id}/{$fAction}", $_attrs);
+					echo form_open("/recipes/update_category/{$categories_id}/{$fAction}{$pager}", $_attrs);
 					echo form_hidden('MAX_FILE_SIZE', '50331648');
 					
 					echo form_hidden('categories_id', $categories_id);
@@ -156,7 +156,7 @@
 						<li class="recipe-row-cell col-xs-12 col-sm-4 first"></li>
 						<li class="recipe-row-cell  editor-buttons col-xs-12 col-sm-4">
 							<?php
-								$_url = ($action == 'new' ? '/recipes' : "/recipes/category_viewer/{$categories_id}");
+								$_url = ($action == 'new' ? '/recipes' : "/recipes/category_viewer/{$categories_id}{$pager}");
 								echo cb_draw_button('Cancel', 'undo', $_url, null) . "&nbsp;&nbsp;";
 								echo cb_draw_button('Submit', 'save', null, null);
 							?>

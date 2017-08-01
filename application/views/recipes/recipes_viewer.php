@@ -72,8 +72,9 @@
 						<li class="recipe-row-cell col-xs-12 col-sm-4 first"></li>
 						<li class="recipe-row-cell viewer-buttons col-xs-12 col-sm-4 noprint">
 							<?php
-								echo cb_draw_button('Back', 'undo', '/recipes/manager/') . "&nbsp;&nbsp;";
-								echo cb_draw_button('Edit', 'edit', '/recipes/editor/' . $recipes_id) . "&nbsp;&nbsp;";
+							    $pager = ($page > 1 ? "/{$page}" : "");
+								echo cb_draw_button('Back', 'undo', '/recipes/manager' . $pager) . "&nbsp;&nbsp;";
+								echo cb_draw_button('Edit', 'edit', '/recipes/editor/' . $recipes_id . $pager) . "&nbsp;&nbsp;";
 								echo cb_draw_button('Delete', 'trash', 'javascript:void(0);', 'delete-btn', array('params' => 'onclick="deleteRecipe(' . $recipes_id . ')"'))
 							?>
 						</li>

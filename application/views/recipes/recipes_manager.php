@@ -30,7 +30,8 @@
 				<div class="row-cell row-left col-xs-12 col-sm-9">
 					
 					<?php
-						echo form_open('/recipes/manager', array('id' => 'recipes_finder_form', 'class' => 'micro-search-form', 'method' => 'get'));
+					    $pager = ($page > 1 ? "/{$page}" : "");
+						echo form_open('/recipes/manager' . $pager, array('id' => 'recipes_finder_form', 'class' => 'micro-search-form', 'method' => 'get'));
 						
 						$_params = array(
 							'name' => 'find_keywords',

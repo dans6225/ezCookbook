@@ -135,17 +135,19 @@
 				array('Recipes Name', 'Category', 'Favorites', 'Last Modified', 'Actions'),
 			);
 			
+			$pager = ($page > 1 ? "/{$page}" : "");
+			
 			foreach($recipes['find_results'] as $rInfo) {
 				$_buttons = array(
-					'view' => cb_draw_button('Details', 'info', "/recipes/viewer/{$rInfo->recipes_id}", null, array('icon_only' => true, 'type' => 'button')),
-					'edit' => cb_draw_button('Edit', 'edit', "/recipes/editor/{$rInfo->recipes_id}", 'edit-btn', array('icon_only' => true, 'type' => 'button')),
+					'view' => cb_draw_button('Details', 'info', "/recipes/viewer/{$rInfo->recipes_id}{$pager}", null, array('icon_only' => true, 'type' => 'button')),
+					'edit' => cb_draw_button('Edit', 'edit', "/recipes/editor/{$rInfo->recipes_id}{$pager}", 'edit-btn', array('icon_only' => true, 'type' => 'button')),
 					'delete' => cb_draw_button('Delete', 'trash', null, 'delete-btn', array('icon_only' => true, 'type' => 'button', 'params' => 'onclick="deleteRecipe(' . $rInfo->recipes_id . ')"'))
 				);
 				// $rInfo->recipes_id,
 				// $rInfo->recipes_name
 				$_score = ($this->showScore ? "<br />(" . number_format($rInfo->score, 3) . ")" : '');
 				$tData[] = array(
-					anchor("recipes/viewer/{$rInfo->recipes_id}", $rInfo->recipes_name, "title=\"{$rInfo->recipes_name}\"") . $_score,
+					anchor("recipes/viewer/{$rInfo->recipes_id}{$pager}", $rInfo->recipes_name, "title=\"{$rInfo->recipes_name}\"") . $_score,
 					$rInfo->categories_name,
 					cb_draw_status_set($rInfo->recipes_id, $rInfo->favorite, 'toggleFavorite'),
 					date('n-j-Y', $rInfo->last_mod),
@@ -171,7 +173,7 @@
 			
 			// Setup CodeIgniter pagination
 			$this->load->library('pagination');
-			$config['base_url'] = base_url() . 'recipes/manager/page/';
+			$config['base_url'] = base_url() . 'recipes/manager/';
 			$config['num_links'] = 3;
 			$config['first_link'] = "&lt;&lt;";
 			$config['last_link'] = "&gt;&gt;";
@@ -202,6 +204,8 @@
 				array('Recipes Name', 'Category', 'Favorites', 'Last Modified', 'Actions'),
 			);
 			
+			$pager = ($page > 1 ? "/{$page}" : "");
+			
 			$this->uInput['page'] = $page;
 			
 			$params = array(
@@ -213,10 +217,10 @@
 			
 			if($recipes['status'] == 'success' && $recipes['foundCt'] > 0) {
 				foreach($recipes['find_results'] as $rInfo) {
-					$_buttons = array('view' => cb_draw_button('Details', 'info', "/recipes/viewer/{$rInfo->recipes_id}", null, array('icon_only' => true, 'type' => 'button')), 'edit' => cb_draw_button('Edit', 'edit', "/recipes/editor/{$rInfo->recipes_id}", 'edit-btn', array('icon_only' => true, 'type' => 'button')), 'delete' => cb_draw_button('Delete', 'trash', null, 'delete-btn', array('icon_only' => true, 'type' => 'button', 'params' => 'onclick="deleteRecipe(' . $rInfo->recipes_id . ')"')));
+					$_buttons = array('view' => cb_draw_button('Details', 'info', "/recipes/viewer/{$rInfo->recipes_id}{$pager}", null, array('icon_only' => true, 'type' => 'button')), 'edit' => cb_draw_button('Edit', 'edit', "/recipes/editor/{$rInfo->recipes_id}", 'edit-btn', array('icon_only' => true, 'type' => 'button')), 'delete' => cb_draw_button('Delete', 'trash', null, 'delete-btn', array('icon_only' => true, 'type' => 'button', 'params' => 'onclick="deleteRecipe(' . $rInfo->recipes_id . ')"')));
 					
 					// $rInfo->recipes_id,
-					$_name = anchor("recipes/viewer/{$rInfo->recipes_id}", $rInfo->recipes_name, "title=\"{$rInfo->recipes_name}\"");
+					$_name = anchor("recipes/viewer/{$rInfo->recipes_id}{$pager}", $rInfo->recipes_name, "title=\"{$rInfo->recipes_name}\"");
 					if($this->showScore) {
 						$_name .= "<br />(" . number_format($rInfo->score, 3) . ")";
 					}
@@ -250,7 +254,7 @@
 			
 		}
 		
-		public function viewer($rid, $ajax = false) {
+		public function viewer($rid, $page = 1, $ajax = false) {
 			if($rid < 1) {
 				if($ajax) {
 					$vOut = array(
@@ -263,6 +267,8 @@
 				}
 				redirect("recipes");
 			}
+			
+			$this->pageData['page'] = $page;
 			
 			$this->pageData['recipes_id'] = $rid;
 			if(!(isset($this->pageData['action']) && cb_not_null($this->pageData['action']))) {
@@ -306,8 +312,9 @@
 			
 		}
 		
-		public function editor($rid = 0, $ajax = false) {
+		public function editor($rid = 0, $page = 1, $ajax = false) {
 			
+			$this->pageData['page'] = $page;
 			$this->pageData['recipes_id'] = $rid;
 			$this->pageData['action'] = 'new';
 			if($rid > 0) {
@@ -339,19 +346,21 @@
 			
 		}
 		
-		public function update_recipe($rid, $action = 'update', $ajax = false) {
+		public function update_recipe($rid, $action = 'update', $page = 1, $ajax = false) {
 			if(cb_not_null($_FILES['recipes_images']) && cb_not_null($_FILES['recipes_images']['name'])) {
 				$this->upload_images('recipes_images');
 			}
+			
+			$pager = ($page > 1 ? "/{$page}" : "");
 			
 			$rid = $this->recipes_model->update_recipe($this->uInput, $rid, $action);
 			
 			if(isset($this->uInput['returnTo']) && cb_not_null($this->uInput['returnTo'])) {
 				redirect($this->uInput['returnTo']);
 			} elseif(isset($this->uInput['apply_updates']) && $this->uInput['apply_updates'] == 'apply') {
-				redirect("/recipes/editor/{$rid}");
+				redirect("/recipes/editor/{$rid}{$pager}");
 			} elseif(!$ajax) {
-				redirect("/recipes/viewer/{$rid}");
+				redirect("/recipes/viewer/{$rid}{$pager}");
 			}
 			echo json_encode(array('rid' => $rid));
 		}
@@ -432,7 +441,7 @@
 			
 		}
 		
-		public function category_viewer($cid, $ajax = false) {
+		public function category_viewer($cid, $page = 1, $ajax = false) {
 			if($cid < 1) {
 				if($ajax) {
 					$vOut = array(
@@ -445,6 +454,10 @@
 				}
 				redirect("recipes");
 			}
+			
+			$pager = ($page > 1 ? "/{$page}" : "");
+			
+			$this->pageData['page'] = $page;
 			
 			$this->pageData['categories_id'] = $cid;
 			if(!(isset($this->pageData['action']) && cb_not_null($this->pageData['action']))) {
@@ -482,7 +495,9 @@
 			
 		}
 		
-		public function category_editor($cid = 0, $ajax = false) {
+		public function category_editor($cid = 0, $page = 1, $ajax = false) {
+			
+			$this->pageData['page'] = $page;
 			
 			$this->pageData['categories_id'] = $cid;
 			$this->pageData['action'] = 'new';
@@ -512,17 +527,19 @@
 			
 		}
 		
-		public function update_category($cid, $action = 'update', $ajax = false) {
+		public function update_category($cid, $action = 'update', $page = 1, $ajax = false) {
 			if(cb_not_null($_FILES['categories_image']) && cb_not_null($_FILES['categories_image']['name'])) {
 				$this->upload_images('categories_image');
 			}
 			
 			$cid = $this->recipes_model->update_category($this->uInput, $cid, $action);
 			
+			$pager = ($page > 1 ? "/{$page}" : "");
+			
 			if(isset($this->uInput['returnTo']) && cb_not_null($this->uInput['returnTo'])) {
 				redirect($this->uInput['returnTo']);
 			} elseif(!$ajax) {
-				redirect("/recipes/category_viewer/{$cid}");
+				redirect("/recipes/category_viewer/{$cid}{$pager}");
 			}
 			echo json_encode(array('cid' => $cid));
 		}
@@ -576,7 +593,7 @@
 			}
 			
 			$this->pageData['keywords'] = (isset($this->uInput['find_keywords']) ? $this->uInput['find_keywords'] : '');
-			$this->pageData[''] = '';
+			// $this->pageData[''] = '';
 		}
 
 	}
