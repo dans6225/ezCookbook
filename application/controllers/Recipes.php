@@ -132,7 +132,13 @@
 			// Setup table data array
 			// 'Recipes ID',
 			$tData = array(
-				array('Recipes Name', 'Category', 'Favorites', 'Last Modified', 'Actions'),
+				array(
+					'Recipes Name',
+					'Category',
+					(!(isset($this->uInput['find_keywords']) && $this->uInput['find_keywords'] == "favorites") ? "<a href=\"" . base_url("recipes/manager/?find_keywords=favorites") . "\" title=\"Find Favorites\">Favorites</a>" : "Favorites"),
+					'Last Modified',
+					'Actions'
+				),
 			);
 			
 			$pager = ($page > 1 ? "/{$page}" : "");

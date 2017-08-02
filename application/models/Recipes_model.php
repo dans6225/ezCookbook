@@ -193,19 +193,24 @@
 			if($cat_id && (int)$cat_id > 0) {
 				$this->db->where("{$this->dbTables['categories']}.categories_id", $cat_id);
 			} elseif(cb_not_null($_keywords)) {
-				$_likePos = (isset($sData['find_method']) && cb_not_null($sData['find_method']) ? $sData['find_method'] : 'both');
-				$this->db->group_start();
-				$this->db->where("MATCH({$this->dbTables['recipes']}.recipes_name, {$this->dbTables['recipes']}.ingredients_left, {$this->dbTables['recipes']}.ingredients_right, 
+				if($_keywords == "favorites") {
+					$this->db->where("favorite = 1");
+				} else {
+					$_likePos = (isset($sData['find_method']) && cb_not_null($sData['find_method']) ? $sData['find_method'] : 'both');
+					$this->db->group_start();
+					$this->db->where("MATCH({$this->dbTables['recipes']}.recipes_name, {$this->dbTables['recipes']}.ingredients_left, {$this->dbTables['recipes']}.ingredients_right,
 										   {$this->dbTables['recipes']}.directions, {$this->dbTables['recipes']}.notes) 
 									 AGAINST('{$_keywords}')");
-				/* // Not sure about this one
-				 * $this->db->or_where("MATCH({$this->dbTables['categories']}.categories_name, {$this->dbTables['categories']}.categories_description, {$this->dbTables['categories']}.categories_keywords)
-									 AGAINST('{$_keywords}')"); */
-				$this->db->or_like("{$this->dbTables['categories']}.categories_name", trim($_keywords, $_likePos));
-				// $this->db->or_like("{$this->dbTables['recipes']}.recipes_name", trim($_keywords, $_likePos)); // Pretty sure not needed
-				
-				$this->db->group_end();
-				$this->db->having("score >= 1");
+					
+					/* // Not sure about this one
+					 * $this->db->or_where("MATCH({$this->dbTables['categories']}.categories_name, {$this->dbTables['categories']}.categories_description, {$this->dbTables['categories']}.categories_keywords)
+										 AGAINST('{$_keywords}')"); */
+					$this->db->or_like("{$this->dbTables['categories']}.categories_name", trim($_keywords, $_likePos));
+					// $this->db->or_like("{$this->dbTables['recipes']}.recipes_name", trim($_keywords, $_likePos)); // Pretty sure not needed
+					
+					$this->db->group_end();
+					$this->db->having("score >= 1");
+				}
 			}
 			
 			// $this->db->order_by("score", 'DESC');
