@@ -12,7 +12,7 @@
 	<div id="container">
 		<div id="body">
 			<div class="body-top row">
-				<h1>Nola's Recipe Box</h1>
+				<h1><?php echo APPLICATION_NAME; ?></h1>
 			</div>
 			<div class="body-main row">
 				<div class="block-left col-xs-12 col-sm-6 col-md-4">

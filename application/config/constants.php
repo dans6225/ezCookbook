@@ -90,4 +90,6 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 	define('IMAGES_MAX_HEIGHT', 600);
 	define('IMAGES_MAX_FILESIZE', 512);
 
+	define('APPLICATION_NAME', 'Nola\'s Recipe Box');
+	
 defined('DEFUALT_MAX_DISPLAY_LISTING_RESULTS') OR define('DEFUALT_MAX_DISPLAY_LISTING_RESULTS', 20);
