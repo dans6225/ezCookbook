@@ -148,9 +148,7 @@
 			
 			$pager = ($page > 1 ? "/{$page}" : "");
 			
-			if(cb_not_null($_gets)) {
-				$_gets = "?" . implode("&", $_gets);
-			}
+			$_gets = (cb_not_null($_gets) ? "?" . implode("&", $_gets) : "");
 			foreach($recipes['find_results'] as $rInfo) {
 				$_buttons = array(
 					'view' => cb_draw_button('Details', 'info', "/recipes/viewer/{$rInfo->recipes_id}{$pager}{$_gets}", null, array('icon_only' => true, 'type' => 'button')),
@@ -264,8 +262,6 @@
 				// $this->view('recipes_manager');
 				$this->load->view('recipes/recipes_manager', $this->pageData);
 			}
-			
-			
 		}
 		
 		public function viewer($rid, $page = 1, $ajax = false) {
@@ -385,9 +381,7 @@
 			if(isset($this->uInput['cat_id']) && $this->uInput['cat_id'] > 0) {
 				$_gets[] = "cat_id={$this->uInput['cat_id']}";
 			}
-			if(cb_not_null($_gets)) {
-				$_gets = "?" . implode("&", $_gets);
-			}
+			$_gets = (cb_not_null($_gets) ? "?" . implode("&", $_gets) : "");
 			
 			$rid = $this->recipes_model->update_recipe($this->uInput, $rid, $action);
 			
