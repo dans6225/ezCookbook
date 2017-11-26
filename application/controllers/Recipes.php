@@ -26,10 +26,10 @@
 			$this->displayResultsCount = DEFUALT_MAX_DISPLAY_LISTING_RESULTS;
 			
 			if(isset($_GET) && is_array($_GET) && cb_not_null($_GET)) {
-				$this->uInput = $this->input->get(NULL, TRUE);
+				$this->uInput = $this->input->get(NULL, FALSE);
 			}
 			if(isset($_POST) && is_array($_POST) && cb_not_null($_POST)) {
-				$this->uInput = array_merge($this->uInput, $this->input->post(NULL, TRUE));
+				$this->uInput = array_merge($this->uInput, $this->input->post(NULL, FALSE));
 			}
 			
 			// Load up session functionality
@@ -77,7 +77,7 @@
 		// Image upload
 		public function upload_images($fFld = 'recipes_images') {
 			$config['upload_path']          = DOC_ROOT . '/images/recipes/';
-			$config['allowed_types']        = 'gif|jpg|png';
+			$config['allowed_types']        = 'gif|jpg|jpeg|png';
 			$config['overwrite']            = TRUE;
 			// $config['max_size']             = IMAGES_MAX_FILESIZE;
 			// $config['max_width']            = IMAGES_MAX_WIDTH;

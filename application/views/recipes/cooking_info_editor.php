@@ -161,7 +161,26 @@
 			</div>
 		</div>
 	</div>
-	
+    <script type="text/javascript">
+        function trimInput(tObj) {
+            var tVal = $(tObj).val().trim();
+            $(tObj).val(tVal);
+        }
+        
+        $(function() {
+            CKEDITOR.replace("cooking_info", {
+                height: '350px',
+                width: '100%',
+                customConfig: '/javascript/ckeditor/config.js'
+            });
+            CKEDITOR.replace("cooking_info_notes", {
+                height: '250px',
+                width: '100%',
+                customConfig: '/javascript/ckeditor/config.js'
+                
+            });
+        })
+    </script>
 	<?php
 	
 	

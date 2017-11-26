@@ -4,7 +4,7 @@
 body {
 	background-color: #fff;
 	margin: 16px 24px;
-	font: 13px/20px normal Helvetica, Arial, sans-serif;
+	font: 14px/20px normal Helvetica, Arial, sans-serif;
 	color: #4F5155;
 }
 
@@ -379,7 +379,7 @@ p.footer {
 
 #admin_recipes_listing th:nth-of-type(2),
 #admin_recipes_listing td:nth-of-type(2) {
-	width: 160px;
+	width: 180px;
 	text-align: center;
 }
 
@@ -417,10 +417,12 @@ p.footer {
 .listing-pagination {
 	padding-top: 12px;
 	text-align: right;
+	font-size: 16px;
 }
 
 .pagination-link {
-	padding: 0 4px;
+	padding: 0 7px;
+	font-size: 18px;
 }
 
 .listing-count {
@@ -428,6 +430,9 @@ p.footer {
 	text-align: right;
 }
 
+.full-width {
+	width: 90%;
+}
 
 /* Drag-N-Drop Upload */
 

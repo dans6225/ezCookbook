@@ -22,10 +22,10 @@
 			parent::__construct();
 			
 			if(isset($_GET) && is_array($_GET) && cb_not_null($_GET)) {
-				$this->uInput = $this->input->get(NULL, TRUE);
+				$this->uInput = $this->input->get(NULL, FALSE);
 			}
 			if(isset($_POST) && is_array($_POST) && cb_not_null($_POST)) {
-				$this->uInput = array_merge($this->uInput, $this->input->post(NULL, TRUE));
+				$this->uInput = array_merge($this->uInput, $this->input->post(NULL, FALSE));
 			}
 			
 			// Load recipes model
@@ -209,7 +209,8 @@
 			$cooking_info = $this->recipes_model->get_cooking_info($ciid);
 			
 			if(cb_not_null($cooking_info->cooking_info)) {
-				$cooking_info->cooking_info = str_replace("\n", "<br />", $cooking_info->cooking_info);
+				// str_replace("\n", "<br />", $cooking_info->cooking_info);
+				$cooking_info->cooking_info = $cooking_info->cooking_info;
 			}
 			
 			$this->pageData['viewerInfo'] = $cooking_info;

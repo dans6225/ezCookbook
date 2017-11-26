@@ -234,7 +234,8 @@
         $(function() {
             CKEDITOR.replace("directions", {
                 height: '350px',
-                width: '100%'
+                width: '100%',
+                customConfig: '/javascript/ckeditor/config.js'
             });
         })
     </script>
