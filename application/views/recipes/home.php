@@ -7,7 +7,7 @@
 	 */
 	
 	$baseURL = base_url();
-	
+	 echo CI_VERSION;
 ?>
 	<div id="container">
 		<div id="body">

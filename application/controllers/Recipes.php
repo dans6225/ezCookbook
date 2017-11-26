@@ -127,6 +127,11 @@
 			$this->uInput['page'] = $page;
 			$recipes = $this->recipes_model->find($this->uInput, false);
 			
+			$_gets = array();
+			if(isset($this->uInput['cat_id']) && $this->uInput['cat_id'] > 0) {
+				$_gets[] = "cat_id={$this->uInput['cat_id']}";
+			}
+			
 			// die("DBG: <pre>" . print_r($recipes, true) . "</pre>");
 			
 			// Setup table data array
@@ -143,17 +148,20 @@
 			
 			$pager = ($page > 1 ? "/{$page}" : "");
 			
+			if(cb_not_null($_gets)) {
+				$_gets = "?" . implode("&", $_gets);
+			}
 			foreach($recipes['find_results'] as $rInfo) {
 				$_buttons = array(
-					'view' => cb_draw_button('Details', 'info', "/recipes/viewer/{$rInfo->recipes_id}{$pager}", null, array('icon_only' => true, 'type' => 'button')),
-					'edit' => cb_draw_button('Edit', 'edit', "/recipes/editor/{$rInfo->recipes_id}{$pager}", 'edit-btn', array('icon_only' => true, 'type' => 'button')),
+					'view' => cb_draw_button('Details', 'info', "/recipes/viewer/{$rInfo->recipes_id}{$pager}{$_gets}", null, array('icon_only' => true, 'type' => 'button')),
+					'edit' => cb_draw_button('Edit', 'edit', "/recipes/editor/{$rInfo->recipes_id}{$pager}{$_gets}", 'edit-btn', array('icon_only' => true, 'type' => 'button')),
 					'delete' => cb_draw_button('Delete', 'trash', null, 'delete-btn', array('icon_only' => true, 'type' => 'button', 'params' => 'onclick="deleteRecipe(' . $rInfo->recipes_id . ')"'))
 				);
 				// $rInfo->recipes_id,
 				// $rInfo->recipes_name
 				$_score = ($this->showScore ? "<br />(" . number_format($rInfo->score, 3) . ")" : '');
 				$tData[] = array(
-					anchor("recipes/viewer/{$rInfo->recipes_id}{$pager}", $rInfo->recipes_name, "title=\"{$rInfo->recipes_name}\"") . $_score,
+					anchor("recipes/viewer/{$rInfo->recipes_id}{$pager}{$_gets}", $rInfo->recipes_name, "title=\"{$rInfo->recipes_name}\"") . $_score,
 					$rInfo->categories_name,
 					cb_draw_status_set($rInfo->recipes_id, $rInfo->favorite, 'toggleFavorite'),
 					date('n-j-Y', $rInfo->last_mod),
@@ -274,6 +282,13 @@
 				redirect("recipes");
 			}
 			
+			
+			$_gets = array();
+			if(isset($this->uInput['cat_id']) && $this->uInput['cat_id'] > 0) {
+				$_gets[] = "cat_id={$this->uInput['cat_id']}";
+			}
+			$this->pageData["_gets"] = (cb_not_null($_gets) ? "?" . implode("&", $_gets) : "");
+			
 			$this->pageData['page'] = $page;
 			
 			$this->pageData['recipes_id'] = $rid;
@@ -329,6 +344,13 @@
 			
 			$recipe = $this->recipes_model->get_recipe($rid);
 			
+			
+			$_gets = array();
+			if(isset($this->uInput['cat_id']) && $this->uInput['cat_id'] > 0) {
+				$_gets[] = "cat_id={$this->uInput['cat_id']}";
+			}
+			$this->pageData["_gets"] = (cb_not_null($_gets) ? "?" . implode("&", $_gets) : "");
+			
 			$this->pageData['editorInfo'] = $recipe;
 			$_cat = (isset($recipe->categories_name) && cb_not_null($recipe->categories_name) ? "{$recipe->categories_name} | " : '');
 			$this->pageData['page_title'] = $_cat . ($this->pageData['action'] == 'new' ? "New Recipe" : "{$recipe->recipes_name} Info");
@@ -359,14 +381,22 @@
 			
 			$pager = ($page > 1 ? "/{$page}" : "");
 			
+			$_gets = array();
+			if(isset($this->uInput['cat_id']) && $this->uInput['cat_id'] > 0) {
+				$_gets[] = "cat_id={$this->uInput['cat_id']}";
+			}
+			if(cb_not_null($_gets)) {
+				$_gets = "?" . implode("&", $_gets);
+			}
+			
 			$rid = $this->recipes_model->update_recipe($this->uInput, $rid, $action);
 			
 			if(isset($this->uInput['returnTo']) && cb_not_null($this->uInput['returnTo'])) {
 				redirect($this->uInput['returnTo']);
 			} elseif(isset($this->uInput['apply_updates']) && $this->uInput['apply_updates'] == 'apply') {
-				redirect("/recipes/editor/{$rid}{$pager}");
+				redirect("/recipes/editor/{$rid}{$pager}{$_gets}");
 			} elseif(!$ajax) {
-				redirect("/recipes/viewer/{$rid}{$pager}");
+				redirect("/recipes/viewer/{$rid}{$pager}{$_gets}");
 			}
 			echo json_encode(array('rid' => $rid));
 		}
