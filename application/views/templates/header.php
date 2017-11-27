@@ -34,6 +34,10 @@
 		<!--<script src="//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>-->
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
 
+        <script src="/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/bootstrap/js/bootstrap3-typeahead.min.js"></script>
+        
+        <!-- bootstrap3-typeahead.min.js -->
         <!--<script src="/javascript/ckeditor/ckeditor.js"></script>-->
         <script src="//cdn.ckeditor.com/4.7.3/standard/ckeditor.js"></script>
         

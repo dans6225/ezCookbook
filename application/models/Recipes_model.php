@@ -151,6 +151,50 @@
 			return $favs;
 		}
 		
+		public function autocomplete_find($sData = array()) {
+			$fOut = array(
+				'status' => 'fail',
+				'foundCt' => 0,
+				'find_results' => array(),
+				'msg' => ''
+			);
+			
+			$_select = "{$this->dbTables['recipes']}.recipes_id,
+						{$this->dbTables['recipes']}.recipes_name";
+			
+			$_whereCat = "";
+			if(isset($sData['cat_id']) && cb_not_null($sData['cat_id'])) {
+				$_whereCat = " AND {$this->dbTables['recipes_categories']}.categories_id = {$sData['cat_id']}";
+			}
+			
+			$this->db->select($_select);
+			$this->db->from($this->dbTables['recipes']);
+			$this->db->join($this->dbTables['recipes_categories'], "{$this->dbTables['recipes']}.recipes_id = {$this->dbTables['recipes_categories']}.recipes_id{$_whereCat}", 'inner');
+			
+			$_keywords = "%{$sData['find_keywords']}%";
+			if(isset($sData['likePos']) && cb_not_null($sData['likePos'])) {
+				if($sData['likePos'] == 'before') {
+					$_keywords = "%{$sData['find_keywords']}";
+				} elseif($sData['likePos'] == 'after') {
+					$_keywords = "{$sData['find_keywords']}%";
+				}
+			}
+			$this->db->where("{$this->dbTables['recipes']}.recipes_name LIKE '{$_keywords}'");
+			$this->db->limit(25);
+			
+			$qry = $this->db->get();
+			
+			if($qry) {
+				$fOut['status'] = 'success';
+				$fOut['foundCt'] = $qry->num_rows();
+				$fOut['find_results'] = $qry->result();
+			} else {
+				$fOut['msg'] = 'None Found';
+			}
+			return $fOut;
+			
+		}
+		
 		public function find($sData = array(), $ajax = false) {
 			$fOut = array(
 				'status' => 'fail',
@@ -179,8 +223,8 @@
 				$_select .= ", ((MATCH({$this->dbTables['recipes']}.recipes_name, {$this->dbTables['recipes']}.ingredients_left, {$this->dbTables['recipes']}.ingredients_right,
 							    {$this->dbTables['recipes']}.directions, {$this->dbTables['recipes']}.notes)
 						  AGAINST('{$_keywords}'))
-						  	+ IF({$this->dbTables['recipes']}.recipes_name LIKE '%{$_keywords}%', 2, 0)
-							+ IF({$this->dbTables['categories']}.categories_name LIKE '%{$_keywords}%', 1, 0)
+						  	+ IF({$this->dbTables['recipes']}.recipes_name LIKE '%{$_keywords}%', 1, 0)
+							+ IF({$this->dbTables['categories']}.categories_name LIKE '%{$_keywords}%', (0.6), 0)
 							+ IF({$this->dbTables['categories']}.categories_keywords LIKE '%{$_keywords}%', (0.5), 0)
 						  ) AS score";
 			}

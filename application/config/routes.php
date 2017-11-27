@@ -53,6 +53,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	$route['recipes'] = 'recipes/view/home';
 	
+	$route['recipes/autocomplete_finder'] = 'recipes/autocomplete_finder';
 	$route['recipes/viewer/(.+)'] = 'recipes/viewer/$1';
 	
 	$route['recipes/manager'] = 'recipes/manager';

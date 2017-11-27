@@ -127,9 +127,12 @@
 			$this->uInput['page'] = $page;
 			$recipes = $this->recipes_model->find($this->uInput, false);
 			
+			$this->pageData['cat_id'] = 0;
+			
 			$_gets = array();
 			if(isset($this->uInput['cat_id']) && $this->uInput['cat_id'] > 0) {
 				$_gets[] = "cat_id={$this->uInput['cat_id']}";
+				$this->pageData['cat_id'] = $this->uInput['cat_id'];
 			}
 			
 			// die("DBG: <pre>" . print_r($recipes, true) . "</pre>");
@@ -150,6 +153,10 @@
 			
 			$_gets = (cb_not_null($_gets) ? "?" . implode("&", $_gets) : "");
 			foreach($recipes['find_results'] as $rInfo) {
+				if(isset($this->uInput['find_keywords']) && $this->uInput['find_keywords'] == $rInfo->recipes_name) {
+					$_catid = ($this->pageData['cat_id'] > 0 ? "?cat_id={$this->pageData['cat_id']}" : "");
+					redirect("recipes/viewer/{$rInfo->recipes_id}{$_catid}");
+				}
 				$_buttons = array(
 					'view' => cb_draw_button('Details', 'info', "/recipes/viewer/{$rInfo->recipes_id}{$pager}{$_gets}", null, array('icon_only' => true, 'type' => 'button')),
 					'edit' => cb_draw_button('Edit', 'edit', "/recipes/editor/{$rInfo->recipes_id}{$pager}{$_gets}", 'edit-btn', array('icon_only' => true, 'type' => 'button')),
@@ -205,6 +212,25 @@
 			
 		}
 		
+		public function autocomplete_finder() {
+			$params = array(
+				'find_keywords' => $this->uInput['query']
+			);
+			if(isset($this->uInput['cat_id']) && $this->uInput['cat_id'] > 0) {
+				$params['cat_id'] = $this->uInput['cat_id'];
+			}
+			$recipes = $this->recipes_model->autocomplete_find($params, true);
+			
+			$_out = array();
+			if($recipes['status'] == 'success' && $recipes['foundCt'] > 0) {
+				foreach($recipes['find_results'] as $rInfo) {
+					$_out[] = $rInfo->recipes_name;
+				}
+			}
+			
+			echo json_encode($_out);
+		}
+		
 		public function finder($page = 1, $ajax = true) {
 			$_start_time = microtime(true);
 			
@@ -220,15 +246,26 @@
 			
 			$this->uInput['page'] = $page;
 			
+			$this->pageData['cat_id'] = (isset($this->uInput['cat_id']) && $this->uInput['cat_id'] > 0 ? $this->uInput['cat_id'] : 0);
+			
 			$params = array(
 				'find_keywords' => $this->uInput['find_keywords'],
 				'find_method' => 'before',
 				'page' => $this->uInput['page']
 			);
 			$recipes = $this->recipes_model->find($params, true);
+			$this->pageData['ajaxRedirId'] = 0;
 			
 			if($recipes['status'] == 'success' && $recipes['foundCt'] > 0) {
 				foreach($recipes['find_results'] as $rInfo) {
+					if(isset($this->uInput['find_keywords']) && $this->uInput['find_keywords'] == $rInfo->recipes_name) {
+						if(!$ajax) {
+							$_catid = ($this->pageData['cat_id'] > 0 ? "?cat_id={$this->pageData['cat_id']}" : "");
+							redirect("recipes/viewer/{$rInfo->recipes_id}{$_catid}");
+						} else {
+							$this->pageData['ajaxRedirId'] = $rInfo->recipes_id;
+						}
+					}
 					$_buttons = array('view' => cb_draw_button('Details', 'info', "/recipes/viewer/{$rInfo->recipes_id}{$pager}", null, array('icon_only' => true, 'type' => 'button')), 'edit' => cb_draw_button('Edit', 'edit', "/recipes/editor/{$rInfo->recipes_id}", 'edit-btn', array('icon_only' => true, 'type' => 'button')), 'delete' => cb_draw_button('Delete', 'trash', null, 'delete-btn', array('icon_only' => true, 'type' => 'button', 'params' => 'onclick="deleteRecipe(' . $rInfo->recipes_id . ')"')));
 					
 					// $rInfo->recipes_id,

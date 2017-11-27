@@ -32,13 +32,14 @@
 				<div class="row-cell row-left col-xs-12 col-sm-9">
 					
 					<?php
-						echo form_open('/recipes/manager', array('id' => 'recipes_finder_form', 'class' => 'micro-search-form', 'method' => 'get'));
+						echo form_open('/recipes/manager' . ($cat_id > 0 ? "?cat_id={$cat_id}" : ""), array('id' => 'recipes_finder_form', 'class' => 'micro-search-form', 'method' => 'post'));
 						
 						$_params = array(
 							'name' => 'find_keywords',
 							'value' => $keywords,
+							'autocomplete' => "off",
 							'placeholder' => 'Search Recipes',
-							'class' => 'find-keywords search-form-fld form-control',
+							'class' => 'find-keywords search-form-fld typeahead form-control',
 							'size' => 36
 						);
 						$_fld = form_input($_params);
@@ -106,6 +107,20 @@ FFLD;
 		function updateResults2Display(r2dObj) {
 		    window.location.assign('/recipes/manager/?results2display=' + $(r2dObj).val());
         }
+
+        var catID = <?php echo $cat_id; ?>;
+        $('input.typeahead').typeahead({
+            minLength: 2,
+            items: 12,
+            autoSelect: false,
+            source:  function (query, process) {
+                return $.get('/recipes/autocomplete_finder', { query: query, cat_id: catID }, function (data) {
+                    // console.log(data);
+                    data = $.parseJSON(data);
+                    return process(data);
+                });
+            }
+        });
 		
 	</script>
 <?php

@@ -28,8 +28,9 @@
 							$_params = array(
 								'name' => 'find_keywords',
 								'value' => $keywords,
+								'autocomplete' => 'off',
 								'placeholder' => 'Search Recipes',
-								'class' => 'find-keywords search-form-fld form-control',
+								'class' => 'find-keywords search-form-fld typeahead form-control',
 								'size' => 36
 							);
 							$_fld = form_input($_params);
@@ -87,13 +88,31 @@ FFLD;
 					$(this).attr("action"),
 					$(this).serialize(),
 					function(data) {
-						// alert(data);
-						$("#recipes_found").html(data.listing);
+                        // console.log(data);
+					    if(data.ajaxRedirId != undefined && data.ajaxRedirId > 0) {
+					        var rArgs = (data.cat_id > 0 ? "?cat_id=" + data.cat_id : "");
+					        window.location.assign("recipes/viewer/" + data.ajaxRedirId + rArgs);
+                        } else {
+                            $("#recipes_found").html(data.listing);
+                        }
 					},
 					"json"
 				);
 				return false;
 			});
+
+            $('input.typeahead').typeahead({
+                minLength: 2,
+                items: 12,
+                autoSelect: false,
+                source:  function (query, process) {
+                    return $.get('/recipes/autocomplete_finder', { query: query }, function (data) {
+                        // console.log(data);
+                        data = $.parseJSON(data);
+                        return process(data);
+                    });
+                }
+            });
 		})
 	
 	</script>
