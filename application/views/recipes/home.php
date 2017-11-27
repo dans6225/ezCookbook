@@ -111,6 +111,9 @@ FFLD;
                         data = $.parseJSON(data);
                         return process(data);
                     });
+                },
+                afterSelect: function () {
+                    $("#recipes_finder_form").submit();
                 }
             });
 		})
