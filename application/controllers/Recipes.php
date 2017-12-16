@@ -196,7 +196,7 @@
 			$config['num_links'] = 3;
 			$config['first_link'] = "&lt;&lt;";
 			$config['last_link'] = "&gt;&gt;";
-			$config['reuse_query_string'] = FALSE;
+			$config['reuse_query_string'] = TRUE;
 			$config['use_page_numbers'] = TRUE;
 			$config['total_rows'] = $this->pageData['total_found'];
 			$config['per_page'] = $this->session->results2display;
