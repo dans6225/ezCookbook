@@ -202,7 +202,8 @@
 				'find_results' => array(),
 				'msg' => ''
 			);
-			$cat_id = false;
+			$cat_id = (isset($sData['cat_id']) && (int)$sData['cat_id'] > 0 ? (int)$sData['cat_id'] : false);
+			$_keywords = (isset($sData['find_keywords']) && cb_not_null($sData['find_keywords']) ? $sData['find_keywords'] : '');
 			
 			$_select = "{$this->dbTables['recipes']}.recipes_id, 
 						{$this->dbTables['recipes']}.recipes_name, 
@@ -212,14 +213,9 @@
 						{$this->dbTables['categories']}.categories_id,
 						{$this->dbTables['categories']}.categories_name";
 			
-			if(isset($sData['cat_id']) && cb_not_null($sData['cat_id'])) {
-				$cat_id = $sData['cat_id'];
+			if($cat_id && $cat_id > 0 && !cb_not_null($_keywords)) {
 				$_select .= ", '1' AS score";
-			} else {
-				$_keywords = '';
-				if(isset($sData['find_keywords']) && cb_not_null($sData['find_keywords'])) {
-					$_keywords = $sData['find_keywords'];
-				}
+			} elseif(cb_not_null($_keywords)) {
 				$_select .= ", ((MATCH({$this->dbTables['recipes']}.recipes_name, {$this->dbTables['recipes']}.ingredients_left, {$this->dbTables['recipes']}.ingredients_right,
 							    {$this->dbTables['recipes']}.directions, {$this->dbTables['recipes']}.notes)
 						  AGAINST('{$_keywords}'))
@@ -234,13 +230,16 @@
 			$this->db->join($this->dbTables['recipes_categories'], "{$this->dbTables['recipes']}.recipes_id = {$this->dbTables['recipes_categories']}.recipes_id", 'inner');
 			$this->db->join($this->dbTables['categories'], "{$this->dbTables['recipes_categories']}.categories_id = {$this->dbTables['categories']}.categories_id", 'inner');
 			
-			if($cat_id && (int)$cat_id > 0) {
+			if($cat_id && $cat_id > 0 && !cb_not_null($_keywords)) {
 				$this->db->where("{$this->dbTables['categories']}.categories_id", $cat_id);
 			} elseif(cb_not_null($_keywords)) {
 				if($_keywords == "favorites") {
 					$this->db->where("favorite = 1");
 				} else {
 					$_likePos = (isset($sData['find_method']) && cb_not_null($sData['find_method']) ? $sData['find_method'] : 'both');
+					if($cat_id && $cat_id > 0) {
+						$this->db->where("{$this->dbTables['categories']}.categories_id", $cat_id);
+					}
 					$this->db->group_start();
 					$this->db->where("MATCH({$this->dbTables['recipes']}.recipes_name, {$this->dbTables['recipes']}.ingredients_left, {$this->dbTables['recipes']}.ingredients_right,
 										   {$this->dbTables['recipes']}.directions, {$this->dbTables['recipes']}.notes) 
@@ -261,6 +260,7 @@
 			$this->db->order_by("{$this->dbTables['recipes']}.recipes_name", 'ASC');
 			
 			$ctSql = $this->db->get_compiled_select(null, FALSE);
+			// echo $ctSql;
 			$ctQry = $this->db->query($ctSql);
 			$foundTotal = $ctQry->num_rows();
 			
